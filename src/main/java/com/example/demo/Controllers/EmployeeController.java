@@ -3,6 +3,7 @@ package com.example.demo.Controllers;
 import com.example.demo.DTOs.EmployeeDTO;
 import com.example.demo.Entities.EmployeeEntity;
 import com.example.demo.Repository.EmployeeRepository;
+import com.example.demo.Services.EmployeeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,19 +17,18 @@ import java.util.List;
 @RequestMapping(path = "employees")
 public class EmployeeController {
 
-    private EmployeeRepository empRepo;
 
-    public EmployeeController(EmployeeRepository e){
-        this.empRepo = e;
+    private final EmployeeService employeeService;
+
+    public EmployeeController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
     }
-
-
 
     @GetMapping(path = "/{empId}")
     @ResponseBody
-    public EmployeeEntity getEmployee(@PathVariable() Long empId){
+    public EmployeeDTO getEmployee(@PathVariable() Long empId){
 //        return new EmployeeDTO(empId , "Yash" , "yash@gmail.com" , 24 , LocalDate.of(2026 , 1 , 1)  , true);
-        return this.empRepo.findById(empId).orElse(null);
+        return this.employeeService.getEmployee(empId);
     }
 
     @GetMapping(path = "/{empId}/{tempid}")
@@ -39,9 +39,9 @@ public class EmployeeController {
 
     @GetMapping()
     @ResponseBody
-    public List<EmployeeEntity> getAllEmployees(@RequestParam(required = false) Integer age  , @RequestParam(required = false) String sortBy ){
+    public List<EmployeeDTO> getAllEmployees(@RequestParam(required = false) Integer age  , @RequestParam(required = false) String sortBy ){
 //        return " Hi Age : %d , %s".formatted(age , sortBy);
-        return this.empRepo.findAll();
+        return this.employeeService.getAllEmployees();
     }
 
     @GetMapping("/secret")
@@ -52,9 +52,9 @@ public class EmployeeController {
 
     @PostMapping()
     @ResponseBody
-    public EmployeeEntity addEmployee(@RequestBody() EmployeeEntity e ){
+    public EmployeeDTO addEmployee(@RequestBody() EmployeeDTO e ){
 //        return e;
-        return this.empRepo.save(e);
+        return this.employeeService.createNewEmployee(e);
     }
 
 }

@@ -1,7 +1,11 @@
 package com.example.demo.DTOs;
 
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
+
+@NoArgsConstructor
 public class EmployeeDTO {
     private Long id;
     private String name;

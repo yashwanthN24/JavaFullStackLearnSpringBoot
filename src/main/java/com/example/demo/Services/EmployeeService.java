@@ -7,8 +7,12 @@ import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +30,15 @@ public class EmployeeService {
 
 
 
-    public EmployeeDTO getEmployee(Long empId) {
-        EmployeeEntity employee =  this.employeeRepository.findById(empId).orElse(null);
-//        modelMapper Maven dependency is used to convert from entities to dto and from dtos to entities
-//        instead of defined toDto() method and toEntity in Entity and DTO classes
-        ModelMapper modelMapper = new ModelMapper(); // bad practice in spring boot creating managing objecrs creation must be managed by spring
-//        so we shift this to a config file having @configuration and @Bean to tell spring to allow dependency injection of this
-        return modelMapper.map(employee , EmployeeDTO.class);
+    public Optional<EmployeeDTO> getEmployee(Long empId) {
+//        Optional<EmployeeEntity> employee =  this.employeeRepository.findById(empId);
+////        modelMapper Maven dependency is used to convert from entities to dto and from dtos to entities
+////        instead of defined toDto() method and toEntity in Entity and DTO classes
+//        ModelMapper modelMapper = new ModelMapper(); // bad practice in spring boot creating managing objecrs creation must be managed by spring
+////        so we shift this to a config file having @configuration and @Bean to tell spring to allow dependency injection of this
+//        return employee.map(emp -> modelMapper.map(emp , EmployeeDTO.class));
+
+        return this.employeeRepository.findById(empId).map(emp -> mapper.map(emp , EmployeeDTO.class));
     }
 
     public List<EmployeeDTO> getAllEmployees() {
@@ -44,5 +50,40 @@ public class EmployeeService {
         EmployeeEntity toSaveEntity = mapper.map(e , EmployeeEntity.class);
         EmployeeEntity savedEntity = this.employeeRepository.save(toSaveEntity);
         return mapper.map(savedEntity , EmployeeDTO.class);
+    }
+
+    public EmployeeDTO updateEmployeeById(Long empId, EmployeeDTO updatedEmployee) {
+//        find the employee by id first
+        EmployeeEntity employeeEntity = mapper.map(updatedEmployee , EmployeeEntity.class);
+        employeeEntity.setId(empId);
+        EmployeeEntity savedEmployeeEntity = this.employeeRepository.save(employeeEntity);
+        return mapper.map(savedEmployeeEntity , EmployeeDTO.class);
+
+    }
+
+    public boolean deleteEmployeeById(Long empId) {
+//        check if the employee exists
+        boolean isExists = this.employeeRepository.existsById(empId);
+        if(!isExists) return false;
+        this.employeeRepository.deleteById(empId);
+        return true;
+    }
+
+    public boolean isExistByEmployeeId(Long empId){
+        return this.employeeRepository.existsById(empId);
+    }
+
+    public EmployeeDTO updateEmployeePartiallyById(Long empId , Map<String , Object> updates) {
+        boolean isExists = isExistByEmployeeId(empId);
+        if(!isExists){
+            return null;
+        }
+        EmployeeEntity employeeEntity = employeeRepository.findById(empId).get();
+        updates.forEach((field , value)-> {
+            Field fieldToBeUpdated = ReflectionUtils.findField(EmployeeEntity.class , field);
+            fieldToBeUpdated.setAccessible(true);
+            ReflectionUtils.setField(fieldToBeUpdated , employeeEntity , value);
+        });
+        return mapper.map(employeeRepository.save(employeeEntity) , EmployeeDTO.class);
     }
 }

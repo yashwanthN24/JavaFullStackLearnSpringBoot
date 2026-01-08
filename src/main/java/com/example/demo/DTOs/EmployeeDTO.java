@@ -3,6 +3,7 @@ package com.example.demo.DTOs;
 import com.example.demo.annotations.EmployeeRoleValidation;
 import com.example.demo.annotations.PrimeNumberCheckValidation;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,16 @@ import org.hibernate.validator.constraints.ISBN;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+// Markers (empty)
+ interface BasicGroup {}
+ interface CustomGroup {}
 
+//For Grouping the order of execution of annoation for validations
+//By default all annotation have a undefined order of execution
+// To fix this order we use GroupSequence
+
+
+@GroupSequence({ BasicGroup.class, CustomGroup.class, EmployeeDTO.class })
 @Getter
 @Setter
 @AllArgsConstructor
@@ -38,8 +48,12 @@ public class EmployeeDTO {
 
 
 //    @NotNull(message = "Role must be admin or user")
-    @EmployeeRoleValidation
-//    @NotBlank(message = "Role of employee cannot be blank")
+@NotBlank(message = "Role of employee cannot be blank" , groups = BasicGroup.class)
+    @EmployeeRoleValidation(groups = CustomGroup.class)
+
+//Because by default there iis not fixed order in which the Annotation execute so we are defining this GroupSuence
+//Although remember when using custom annotation use only that annotation alone and let it handle all cases (This is common in codebases)
+//
 //    @Pattern(regexp = "^(ADMIN|USER)$" , message = "Role of employee can either be USER or ADMIN")
 
     private  String role; // ADMIN | USER

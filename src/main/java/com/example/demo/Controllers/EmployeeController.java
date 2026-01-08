@@ -38,11 +38,11 @@ public class EmployeeController {
         return e.map(employeeDTO -> ResponseEntity.ok(employeeDTO)).orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(path = "/{empId}/{tempid}")
-    @ResponseBody
-    public EmployeeDTO getEmployee(@PathVariable("empId") Long Id , @PathVariable("tempid") Long tmpId){
-        return new EmployeeDTO(Id , "Yash" , "yash@gmail.com" , 24 , LocalDate.of(2026 , 1 , 1)  , true);
-    }
+//    @GetMapping(path = "/{empId}/{tempid}")
+//    @ResponseBody
+//    public EmployeeDTO getEmployee(@PathVariable("empId") Long Id , @PathVariable("tempid") Long tmpId){
+//        return new EmployeeDTO(Id , "Yash" , "yash@gmail.com" , 24 , LocalDate.of(2026 , 1 , 1)  , true);
+//    }
 
     @GetMapping()
     @ResponseBody

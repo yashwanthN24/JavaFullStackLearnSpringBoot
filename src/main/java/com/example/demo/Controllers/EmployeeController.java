@@ -4,6 +4,7 @@ import com.example.demo.DTOs.EmployeeDTO;
 import com.example.demo.Entities.EmployeeEntity;
 import com.example.demo.Repository.EmployeeRepository;
 import com.example.demo.Services.EmployeeService;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 //if use RestController @ResponseBody included so directly objecfts converted to json
 
@@ -35,8 +33,21 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable() Long empId){
 //        return new EmployeeDTO(empId , "Yash" , "yash@gmail.com" , 24 , LocalDate.of(2026 , 1 , 1)  , true);
         Optional<EmployeeDTO> e =  this.employeeService.getEmployee(empId);
-        return e.map(employeeDTO -> ResponseEntity.ok(employeeDTO)).orElse(ResponseEntity.notFound().build());
+        return e.map(employeeDTO -> ResponseEntity.ok(employeeDTO)).orElseThrow(()-> new ResourceNotFoundException("Employee Not Found"));
     }
+
+
+//    But this exception Hanlder works only for this controller
+//    So we have to write a Global Exception Hanlder create a folder named advices inside create GlobalExceptionHandler
+//    naming can be your wish but i am telling convention
+
+
+//    @ExceptionHandler(NoSuchElementException.class)
+//    public ResponseEntity<String> handleException(NoSuchElementException e){
+//        return new ResponseEntity<>(e.getMessage() , HttpStatus.NOT_FOUND);
+//    }
+
+
 
 //    @GetMapping(path = "/{empId}/{tempid}")
 //    @ResponseBody
@@ -84,7 +95,6 @@ public class EmployeeController {
     @ResponseBody
     public ResponseEntity<EmployeeDTO> updateEmployeePartially(@PathVariable Long empId , @RequestBody Map<String , Object> updates){
         EmployeeDTO employeeDto =  this.employeeService.updateEmployeePartiallyById(empId , updates);
-        if(employeeDto == null)return ResponseEntity.notFound().build();
         return ResponseEntity.ok(employeeDto);
     }
 

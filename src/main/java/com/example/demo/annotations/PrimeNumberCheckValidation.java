@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD , ElementType.PARAMETER})
 @Constraint(validatedBy = {PrimeNumberCheckValidator.class})
 public @interface PrimeNumberCheckValidation {
-    String message() default "Number must be a prime number";
+    String message() default "port must be a prime number";
 
     Class<?>[] groups() default {};
 

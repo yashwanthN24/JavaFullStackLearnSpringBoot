@@ -4,6 +4,7 @@ import com.example.demo.DTOs.EmployeeDTO;
 import com.example.demo.Entities.EmployeeEntity;
 import com.example.demo.Repository.EmployeeRepository;
 import com.example.demo.Services.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,7 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployee(@PathVariable() Long empId){
 //        return new EmployeeDTO(empId , "Yash" , "yash@gmail.com" , 24 , LocalDate.of(2026 , 1 , 1)  , true);
         Optional<EmployeeDTO> e =  this.employeeService.getEmployee(empId);
-        return e.map(employeeDTO -> ResponseEntity.ok(employeeDTO)).orElse(ResponseEntity.notFound().build())
+        return e.map(employeeDTO -> ResponseEntity.ok(employeeDTO)).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(path = "/{empId}/{tempid}")
@@ -58,7 +59,7 @@ public class EmployeeController {
 
     @PostMapping()
     @ResponseBody
-    public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody() EmployeeDTO e ){
+    public ResponseEntity<EmployeeDTO> addEmployee(@RequestBody() @Valid EmployeeDTO e ){
 //        return e;
         EmployeeDTO createdEmployee =  this.employeeService.createNewEmployee(e);
         return new ResponseEntity<>(createdEmployee , HttpStatus.CREATED);
@@ -66,7 +67,7 @@ public class EmployeeController {
 
     @PutMapping(path = "/{empId}")
     @ResponseBody
-    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long empId , @RequestBody EmployeeDTO updatedEmployee){
+    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long empId , @RequestBody @Valid EmployeeDTO updatedEmployee){
         return ResponseEntity.ok(this.employeeService.updateEmployeeById(empId , updatedEmployee));
     }
 
@@ -75,7 +76,7 @@ public class EmployeeController {
     public ResponseEntity<Boolean> deleteEmployee(@PathVariable Long empId){
         boolean isDeleted = this.employeeService.deleteEmployeeById(empId);
         if(isDeleted) return ResponseEntity.ok(true);
-        return ResponseEntity.notFound().build()
+        return ResponseEntity.notFound().build();
 
     }
 

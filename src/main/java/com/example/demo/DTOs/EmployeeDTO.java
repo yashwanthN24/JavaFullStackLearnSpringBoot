@@ -1,6 +1,7 @@
 package com.example.demo.DTOs;
 
 import com.example.demo.annotations.EmployeeRoleValidation;
+import com.example.demo.annotations.PrimeNumberCheckValidation;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,8 @@ public class EmployeeDTO {
     @Min(value = 18 , message = "Age of employee must be 18 or greater")
     private Integer age;
 
+
+    @JsonProperty(value = "role", required = true)
     @NotBlank(message = "Role of employee cannot be blank")
 //    @Pattern(regexp = "^(ADMIN|USER)$" , message = "Role of employee can either be USER or ADMIN")
     @EmployeeRoleValidation
@@ -52,6 +55,9 @@ public class EmployeeDTO {
     @JsonProperty("isActive")
     private Boolean isActive; // jackson picks up fields based on getter so it sees as Active not isActive either chnage it at getter level
 //    or change it here in property
+
+    @PrimeNumberCheckValidation
+    private Integer port;
 
 
 }

@@ -37,4 +37,6 @@ public class EmployeeEntity {
 
     private BigDecimal salary;
 
+    private Integer port;
+
 }

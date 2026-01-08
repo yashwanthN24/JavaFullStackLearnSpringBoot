@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.ISBN;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,10 +35,13 @@ public class EmployeeDTO {
     private Integer age;
 
 
-    @JsonProperty(value = "role", required = true)
-    @NotBlank(message = "Role of employee cannot be blank")
-//    @Pattern(regexp = "^(ADMIN|USER)$" , message = "Role of employee can either be USER or ADMIN")
+
+
+//    @NotNull(message = "Role must be admin or user")
     @EmployeeRoleValidation
+//    @NotBlank(message = "Role of employee cannot be blank")
+//    @Pattern(regexp = "^(ADMIN|USER)$" , message = "Role of employee can either be USER or ADMIN")
+
     private  String role; // ADMIN | USER
 
 
@@ -56,6 +60,7 @@ public class EmployeeDTO {
     private Boolean isActive; // jackson picks up fields based on getter so it sees as Active not isActive either chnage it at getter level
 //    or change it here in property
 
+//    dont use is Prefix in DTO's
     @PrimeNumberCheckValidation
     private Integer port;
 

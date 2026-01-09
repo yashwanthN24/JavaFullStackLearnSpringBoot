@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleResourceNotFound(ResourceNotFoundException e){
+    public ResponseEntity<ApiResponse<?>> handleResourceNotFound(ResourceNotFoundException e){
         ApiError error = ApiError.builder().status(HttpStatus.NOT_FOUND).message(Optional.of(e.getMessage()).orElse("Resource not found")).build();
-        return new ResponseEntity<>(error , HttpStatus.NOT_FOUND);
+        return buildApiResponseFromErrors(error);
     }
 
     @ExceptionHandler(Exception.class) // SInce we are ctahing the parent Exception class all exceptions get caught here
-    public ResponseEntity<ApiError> handleInternalServerError(Exception e){
+    public ResponseEntity<ApiResponse<?>> handleInternalServerError(Exception e){
         ApiError error = ApiError.builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .message(
@@ -31,11 +31,11 @@ public class GlobalExceptionHandler {
                                 .orElse("An unexpected error occurred")
                 )
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return buildApiResponseFromErrors(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationErrors(MethodArgumentNotValidException e){
+    public ResponseEntity<ApiResponse<?>> handleValidationErrors(MethodArgumentNotValidException e){
         List<String> errors = e.getBindingResult()
                 .getAllErrors()
                 .stream()
@@ -49,8 +49,12 @@ public class GlobalExceptionHandler {
                 )
                 .subErrors(errors)
                 .build();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        return buildApiResponseFromErrors(error);
 //        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    private ResponseEntity<ApiResponse<?>> buildApiResponseFromErrors(ApiError error) {
+        return new ResponseEntity<>(new ApiResponse<>(error) , error.getStatus());
     }
 }
 

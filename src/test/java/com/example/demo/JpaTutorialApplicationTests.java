@@ -31,16 +31,16 @@ class JpaTutorialApplicationTests {
 
 	@Test
 	void getRepository(){
-		List<ProductEntity> allProducts = this.repo.findByTitle("Parle-G");
-		System.out.println(allProducts);
+//		List<ProductEntity> allProducts = this.repo.findByTitle("Parle-G");
+//		System.out.println(allProducts);
 
-		List<ProductEntity> allProductAfterDate = this.repo.findByCreatedAtAfter(LocalDateTime.of(2024 , 1 , 1 , 0 , 0 , 0));
+		List<ProductEntity> allProductAfterDate = this.repo.findByCreatedAtAfterOrderByTitleDesc(LocalDateTime.of(2024 , 1 , 1 , 0 , 0 , 0));
 		System.out.println(allProductAfterDate);
 
 		List<ProductEntity> allProductGreaterthanSpecificQuantityAndPrice = this.repo.findByQuantityGreaterThanOrPriceLessThan(2 , BigDecimal.valueOf(23.0));
 		System.out.println(allProductGreaterthanSpecificQuantityAndPrice);
 
-		List<ProductEntity> entities = this.repo.findByTitleContainingIgnoreCase("CHOco");
+		List<ProductEntity> entities = this.repo.findByTitleContainingIgnoreCase("CHOco" , null);
 		System.out.println(entities);
 
 	}

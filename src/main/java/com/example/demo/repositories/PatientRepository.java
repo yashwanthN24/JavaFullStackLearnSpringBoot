@@ -26,7 +26,7 @@ public interface PatientRepository extends JpaRepository<Patient , Long> {
     @Query("select  new com.example.demo.dtos.projectionDtos.CPatient(p.id , p.name) from Patient p ")
     List<CPatient> getAllCPatientInfo();
 
-    @Query("select new com.example.demo.dtos.projectionDtos.BloodGroupStats(p.bloodGroup, " + " count(p)) from Patient  p group by  p.bloodGroup order by  count(p) DESC  "   )
+    @Query("select new com.example.demo.dtos.projectionDtos.BloodGroupStats(p.bloodGroup, " + " count(distinct  p.id)) as countId from Patient  p group by  p.bloodGroup order by  count(distinct  p.id) DESC  "   )
     List<BloodGroupStats> getBloodGroupStats();
 
     @Transactional
@@ -52,5 +52,10 @@ public interface PatientRepository extends JpaRepository<Patient , Long> {
     // This WORKS (explicit constructor wins)
     @Query("select new com.example.demo.dtos.projectionDtos.TPatient(p.name, p.bloodGroup) from Patient p")
     List<TPatient> getPatients2();  // Order irrelevant
+
+    @Query("""
+        select  p  from Patient p  left join fetch p.appointments
+""")
+    List<Patient> getAllPatientsWithAppointment();
 }
 

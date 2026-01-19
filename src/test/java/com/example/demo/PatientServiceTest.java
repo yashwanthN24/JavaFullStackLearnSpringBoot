@@ -7,6 +7,7 @@ import com.example.demo.dtos.projectionDtos.TPatient;
 import com.example.demo.entities.Patient;
 import com.example.demo.entities.type.BloodGroupType;
 import com.example.demo.repositories.PatientRepository;
+import com.example.demo.services.PatientService;
 import jakarta.websocket.OnClose;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class PatientServiceTest {
 
     @Autowired
     private PatientRepository patientRepository;
+
+    @Autowired
+    private PatientService patientService;
 
     @Test
     public void testPatient(){
@@ -59,6 +63,24 @@ public class PatientServiceTest {
         List<TPatient> all2 = this.patientRepository.getPatients2();
         all2.forEach(System.out::println);
     }
+
+    @Test
+    public void testPersistanceContext(){
+        patientService.testPatientRepository();
+
+
+        System.out.println("------------------------------------------------------");
+
+        patientService.testPatientRepository2(); //prints true because @Transaction both have the same perisstence context due to which the first operation is cachesd at persistence context so only one call to select rather than two select queries
+    }
+
+    @Test
+    public void testNplusOneQuery(){
+        List<Patient> patientList = patientRepository.getAllPatientsWithAppointment();
+
+        patientList.forEach(System.out::println);
+    }
+
 
 
 }

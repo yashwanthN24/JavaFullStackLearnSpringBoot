@@ -65,7 +65,9 @@ Lombok Specific Annotation Lombok is commonly used for generating getters and se
 
 ``@NoArgConstructor`` - Lombok generates No Argument constructor 
 
-``@Builder`` - Lombok provide Builder pattern for this class meaning static method builder() provide instance of this class and can use method chaining upon it to call setter and set values and finally build the overall object 
+``@Builder`` - Lombok provide Builder pattern for this class meaning static method builder() provide instance of this class and can use method chaining upon it to call setter and set values and finally build the overall object
+
+  ``@ReqArgConstructor`` - constructs a constructor for private final instance fields at class level  
 
 ### Exception Hanling Specific and Global Annoations 
 
@@ -76,3 +78,28 @@ Lombok Specific Annotation Lombok is commonly used for generating getters and se
 
 General Annotation are @Override , @FunctionalInterface these are for developer experience meaning 
 they explicity get tp know we are overriding and This is a FunctionalInterface keep codebase clean as compiler enforce compiler time issues 
+
+### Spring JPA and Hibernate 
+
+ ``@Query`` - To provide custom jpql query or native-sql-query for your repository interface 
+
+   ``@Transactional`` - To enable transactional context to enable same persistance context of hibernate lifecycle 
+
+##### Relationships among Entities 
+
+   ``@OneToOne`` - To establish one to one relationship between two entities 
+
+``@ManyToOne`` -   
+
+``@OneToMany`` 
+
+``@ManyToMany`` 
+
+``@JoinColumn`` - To control the foriegn key field naming 
+
+ ``@JoinTable`` - Used along with @ManyToMany used to control the field names in join or junction table 
+
+ ``@ToString.Exclude`` - To Exclude a field from ToString representation of an object without printing this field 
+
+
+   

@@ -40,5 +40,15 @@ public class RestClientConfig {
                 .build();
     }
 
+    @Bean
+    @Qualifier("currency")
+    RestClient getCurrenciesClient(){
+        return RestClient.builder()
+                .baseUrl("https://api.freecurrencyapi.com/v1/latest")
+                .defaultHeader(CONTENT_TYPE , APPLICATION_JSON_VALUE)
+                .build();
+
+    }
+
 }
 

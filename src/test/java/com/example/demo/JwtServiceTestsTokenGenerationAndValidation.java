@@ -14,7 +14,7 @@ public class JwtServiceTestsTokenGenerationAndValidation {
 
     @Test
     public void testGenerateToken(){
-        User user = new User(4L , "niketha@gmail.com" , "niki");
+        User user = new User(4L , "niketha@gmail.com" , "niki" , "nikiesh");
         String token = jwtService.generateToken(user);
         System.out.println(token);
 

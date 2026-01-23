@@ -13,6 +13,12 @@ public class WebSecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
-          return  httpSecurity.build(); // No Authentication No filter lets in all requesrs
+          return  httpSecurity
+                  .authorizeHttpRequests(auth -> auth
+
+                          .anyRequest()
+                          .authenticated())
+                  .formLogin(Customizer.withDefaults())
+                  .build();
     }
 }

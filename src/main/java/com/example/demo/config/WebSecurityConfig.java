@@ -1,7 +1,9 @@
 package com.example.demo.config;
 
 import com.example.demo.filters.JWTAuthFilter;
+import com.example.demo.filters.LoggingFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +28,10 @@ public class WebSecurityConfig {
 
     private final JWTAuthFilter jwtAuthFilter;
 
+    private final LoggingFilter loggingFilter;
+
+//
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
           return  httpSecurity
@@ -37,6 +43,7 @@ public class WebSecurityConfig {
                   .sessionManagement(sessionConfig ->
                           sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // to remove session
                   .addFilterBefore(jwtAuthFilter , UsernamePasswordAuthenticationFilter.class)
+                  .addFilterBefore(loggingFilter, JWTAuthFilter.class)
 //                  .formLogin(Customizer.withDefaults())
                   .build();
     }

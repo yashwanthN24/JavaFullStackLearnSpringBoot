@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                   .sessionManagement(sessionConfig ->
                           sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))// to remove session
                   .exceptionHandling(exceptionConfig -> exceptionConfig
-                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401
+                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401 for unaithorized rather than forbidden 403
                   .addFilterBefore(jwtAuthFilter , UsernamePasswordAuthenticationFilter.class)
                   .addFilterBefore(loggingFilter, JWTAuthFilter.class)
 //                  .formLogin(Customizer.withDefaults())

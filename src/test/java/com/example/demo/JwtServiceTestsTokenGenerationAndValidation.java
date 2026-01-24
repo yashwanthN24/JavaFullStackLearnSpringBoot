@@ -15,7 +15,7 @@ public class JwtServiceTestsTokenGenerationAndValidation {
     @Test
     public void testGenerateToken(){
         User user = new User(4L , "niketha@gmail.com" , "niki" , "nikiesh");
-        String token = jwtService.generateToken(user);
+        String token = jwtService.generateAccessToken(user);
         System.out.println(token);
 
         Long userId = jwtService.getUserIdFromToken(token);

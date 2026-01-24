@@ -22,14 +22,24 @@ public class JWTService {
         return Keys.hmacShaKeyFor(jwtSeretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(User user){
+    public String generateAccessToken(User user){
 //        Jwts.builder is for signinvg a new JWT token
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .claim("email" , user.getEmail())
                 .claim("roles" , Set.of("ADMIN" , "USER"))
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000)))
+                .expiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000))) // 5 mins expiration of access-token
+                .signWith(getSecretKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(User user){
+//        Jwts.builder is for signinvg a new JWT token
+        return Jwts.builder()
+                .subject(user.getId().toString())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + (6L *30*24*60*60*1000))) // refresh token expires after 6months from current date
                 .signWith(getSecretKey())
                 .compact();
     }

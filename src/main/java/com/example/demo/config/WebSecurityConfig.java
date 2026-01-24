@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -41,7 +43,9 @@ public class WebSecurityConfig {
                           .anyRequest().authenticated())
                   .csrf(csrfConfig -> csrfConfig.disable()) // to disable csrf these two session and csrf we wont woory as we will use JWT authentication thats thne industry standard
                   .sessionManagement(sessionConfig ->
-                          sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // to remove session
+                          sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))// to remove session
+                  .exceptionHandling(exceptionConfig -> exceptionConfig
+                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401
                   .addFilterBefore(jwtAuthFilter , UsernamePasswordAuthenticationFilter.class)
                   .addFilterBefore(loggingFilter, JWTAuthFilter.class)
 //                  .formLogin(Customizer.withDefaults())

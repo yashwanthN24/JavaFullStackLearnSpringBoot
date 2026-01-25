@@ -1,0 +1,14 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${google_Client_id}
+            client-secret: ${google_Client_Secret}
+          github:
+            client-id: ${github_Client_Id}
+            client-secret: ${github_Client_Secret}
+            scope:
+              - user:email
+              - read:user

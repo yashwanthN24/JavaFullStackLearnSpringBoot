@@ -2,6 +2,7 @@ package com.example.demo.config;
 
 import com.example.demo.filters.JWTAuthFilter;
 import com.example.demo.filters.LoggingFilter;
+import com.example.demo.handlers.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -32,22 +33,28 @@ public class WebSecurityConfig {
 
     private final LoggingFilter loggingFilter;
 
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
 //
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
           return  httpSecurity
                   .authorizeHttpRequests(auth -> auth
-                          .requestMatchers("/posts" , "/auth/**").permitAll() // now posts route is public accessible by all not a protected route
+                          .requestMatchers("/posts" , "/auth/**" , "/home.html" , "/oauth2/**", "/login/oauth2/**").permitAll() // now posts route is public accessible by all not a protected route
 //                          .requestMatchers("/posts/**").hasAnyRole("ADMIN")// protected route but only user with Role ADMIN can access these routes
                           .anyRequest().authenticated())
                   .csrf(csrfConfig -> csrfConfig.disable()) // to disable csrf these two session and csrf we wont woory as we will use JWT authentication thats thne industry standard
                   .sessionManagement(sessionConfig ->
                           sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))// to remove session
-                  .exceptionHandling(exceptionConfig -> exceptionConfig
-                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401 for unaithorized rather than forbidden 403
+//                  .exceptionHandling(exceptionConfig -> exceptionConfig
+//                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401 for unaithorized rather than forbidden 403
                   .addFilterBefore(jwtAuthFilter , UsernamePasswordAuthenticationFilter.class)
                   .addFilterBefore(loggingFilter, JWTAuthFilter.class)
+                  .oauth2Login(oauth2Config -> oauth2Config
+                          .failureUrl("/login?error=true")
+                          .successHandler(oAuth2SuccessHandler)
+                  )
 //                  .formLogin(Customizer.withDefaults())
                   .build();
     }

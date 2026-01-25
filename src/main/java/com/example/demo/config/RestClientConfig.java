@@ -50,5 +50,14 @@ public class RestClientConfig {
 
     }
 
+    @Bean
+    @Qualifier("github")
+    RestClient getGithubEmailFromTokenClient(){
+        return RestClient.builder()
+                .baseUrl("https://api.github.com")
+                .defaultHeader(CONTENT_TYPE , APPLICATION_JSON_VALUE)
+                .build();
+    }
+
 }
 

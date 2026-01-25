@@ -29,7 +29,7 @@ public class JWTService {
                 .claim("email" , user.getEmail())
                 .claim("roles" , Set.of("ADMIN" , "USER"))
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000))) // 5 mins expiration of access-token
+                .expiration(new Date(System.currentTimeMillis() + (5 *  60 * 1000))) // 5 mins expiration of access-token
                 .signWith(getSecretKey())
                 .compact();
     }

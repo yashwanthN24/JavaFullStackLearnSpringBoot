@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Builder
 @Entity
 @Table(name = "users")
-@Audited
 public class User implements UserDetails {
 
     @Id

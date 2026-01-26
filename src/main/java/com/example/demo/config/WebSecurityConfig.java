@@ -5,6 +5,7 @@ import com.example.demo.entities.enums.Role;
 import com.example.demo.filters.JWTAuthFilter;
 import com.example.demo.filters.LoggingFilter;
 import com.example.demo.handlers.OAuth2SuccessHandler;
+import com.example.demo.utils.CustomAuthenticationEntryPoint;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -45,9 +47,10 @@ public class WebSecurityConfig {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 //
-    public static final String[] publicRoutes = {
-        "/posts" , "/auth/**" , "/home.html" , "/oauth2/**", "/login/oauth2/**"
+    public static final String[] publicRoutes = { "/auth/**" , "/home.html" , "/oauth2/**", "/login/oauth2/**"
     };
 
     @Bean
@@ -56,19 +59,12 @@ public class WebSecurityConfig {
                   .authorizeHttpRequests(auth -> auth
                           .requestMatchers(publicRoutes).permitAll() // now posts route is public accessible by all not a protected route
 //                          .requestMatchers("/posts/**").hasAnyRole("ADMIN")// protected route but only user with Role ADMIN can access these routes
-                          .requestMatchers(HttpMethod.GET, "/posts").permitAll()
-                          .requestMatchers(HttpMethod.POST , "/posts/**").hasAnyRole(ADMIN.name() , CREATOR.name())
-//                          .requestMatchers(HttpMethod.GET , "/posts/{id}").hasRole(ADMIN.name())
-                          .requestMatchers(HttpMethod.POST , "/posts/**").hasAuthority(POST_CREATE.name())
-                          .requestMatchers(HttpMethod.PUT , "/posts/**").hasAnyAuthority(POST_UPDATE.name())
-                          .requestMatchers(HttpMethod.GET , "/posts/**").hasAuthority(POST_VIEW.name())
-                          .requestMatchers(HttpMethod.DELETE ,"/posts/**").hasAuthority(POST_DELETE.name())
+                          .requestMatchers("/posts/**").authenticated() // here we just say it must be a proteted route in method we hanlde role based authroization via @Secured and @PreAuthorize
                           .anyRequest().authenticated())
                   .csrf(csrfConfig -> csrfConfig.disable()) // to disable csrf these two session and csrf we wont woory as we will use JWT authentication thats thne industry standard
                   .sessionManagement(sessionConfig ->
                           sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))// to remove session
-//                  .exceptionHandling(exceptionConfig -> exceptionConfig
-//                          .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))) // Returns 401 for unaithorized rather than forbidden 403
+                  .exceptionHandling(exceptionConfig -> exceptionConfig.authenticationEntryPoint(customAuthenticationEntryPoint))// Returns 401 for unaithorized rather than forbidden 403
                   .addFilterBefore(jwtAuthFilter , UsernamePasswordAuthenticationFilter.class)
                   .addFilterBefore(loggingFilter, JWTAuthFilter.class)
                   .oauth2Login(oauth2Config -> oauth2Config

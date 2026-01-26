@@ -33,16 +33,18 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDTO createNewPost(PostDTO inputPost) {
+       User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PostEntity postEntity = modelMapper.map(inputPost, PostEntity.class);
+        postEntity.setAuthor(user);
         return modelMapper.map(postRepository.save(postEntity), PostDTO.class);
     }
 
     @Override
     public PostDTO getPostById(Long postId) {
 
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        log.info(" user {} " , user);
+//        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        log.info(" user {} " , user);
 
         PostEntity postEntity = postRepository
                 .findById(postId)

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Set;
+
 @SpringBootTest
 public class JwtServiceTestsTokenGenerationAndValidation {
 
@@ -14,7 +16,7 @@ public class JwtServiceTestsTokenGenerationAndValidation {
 
     @Test
     public void testGenerateToken(){
-        User user = new User(4L , "niketha@gmail.com" , "niki" , "nikiesh");
+        User user = new User(4L , "niketha@gmail.com" , "niki" , "nikiesh" , Set.of() );
         String token = jwtService.generateAccessToken(user);
         System.out.println(token);
 

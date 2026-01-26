@@ -1,16 +1,21 @@
 package com.example.demo.config;
 
+import com.example.demo.entities.enums.Permission;
+import com.example.demo.entities.enums.Role;
 import com.example.demo.filters.JWTAuthFilter;
 import com.example.demo.filters.LoggingFilter;
 import com.example.demo.handlers.OAuth2SuccessHandler;
+import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -24,9 +29,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.demo.entities.enums.Permission.*;
+import static com.example.demo.entities.enums.Role.ADMIN;
+import static com.example.demo.entities.enums.Role.CREATOR;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
 
     private final JWTAuthFilter jwtAuthFilter;
@@ -36,13 +46,23 @@ public class WebSecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
 //
+    public static final String[] publicRoutes = {
+        "/posts" , "/auth/**" , "/home.html" , "/oauth2/**", "/login/oauth2/**"
+    };
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
           return  httpSecurity
                   .authorizeHttpRequests(auth -> auth
-                          .requestMatchers("/posts" , "/auth/**" , "/home.html" , "/oauth2/**", "/login/oauth2/**").permitAll() // now posts route is public accessible by all not a protected route
+                          .requestMatchers(publicRoutes).permitAll() // now posts route is public accessible by all not a protected route
 //                          .requestMatchers("/posts/**").hasAnyRole("ADMIN")// protected route but only user with Role ADMIN can access these routes
+                          .requestMatchers(HttpMethod.GET, "/posts").permitAll()
+                          .requestMatchers(HttpMethod.POST , "/posts/**").hasAnyRole(ADMIN.name() , CREATOR.name())
+//                          .requestMatchers(HttpMethod.GET , "/posts/{id}").hasRole(ADMIN.name())
+                          .requestMatchers(HttpMethod.POST , "/posts/**").hasAuthority(POST_CREATE.name())
+                          .requestMatchers(HttpMethod.PUT , "/posts/**").hasAnyAuthority(POST_UPDATE.name())
+                          .requestMatchers(HttpMethod.GET , "/posts/**").hasAuthority(POST_VIEW.name())
+                          .requestMatchers(HttpMethod.DELETE ,"/posts/**").hasAuthority(POST_DELETE.name())
                           .anyRequest().authenticated())
                   .csrf(csrfConfig -> csrfConfig.disable()) // to disable csrf these two session and csrf we wont woory as we will use JWT authentication thats thne industry standard
                   .sessionManagement(sessionConfig ->

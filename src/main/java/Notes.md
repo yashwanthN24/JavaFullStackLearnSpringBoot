@@ -51,6 +51,12 @@
 
 ``@GeneratedValue`` - Makes the primary key field as autoincrement so that user doesnt need to do manually , used primarily with primary key @Id marked field 
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(value = EnumType.STRING)
+
+   For Enums types in Entity creates a jointable automatically to the field you apply as its a collection field like HashSet()
+
+
   ##### DTO Specific (Data Transfer Objects)
 
 Uses Jakarta validation Annoation like @NotNull , @NotBlank , @Min , @Max etc
@@ -101,5 +107,24 @@ they explicity get tp know we are overriding and This is a FunctionalInterface k
 
  ``@ToString.Exclude`` - To Exclude a field from ToString representation of an object without printing this field 
 
+#### Other important Production ready annoatations 
 
-   
+``@Audit``  To Audit the current entity and track changes like updatedAt and createdAt and changed to specifice rows and their data and who did that change 
+
+``@Slf4j``  - Lombok Annotation to setup Logger of SLF4j package build into spring  for that class 
+            - Expands to 
+```java 
+private static final Logger log = LoggerFactory.getLogger(yourClassname.class);`
+```
+
+#### Spring Security Specific Annotations 
+
+``@EnableWebSecurity`` - To take control of the filter chain applied to a @Configuration Class common for springboot seciruty setup 
+
+``@EnableMethodSecurity(securedEnabled = true)``
+ For Authoriazation at method level Role Based access control to enable @Secured annotation use 
+
+  ``@Secured``  - for specify authorization based on Role 
+
+   ``@PreAuthorize`` - for specifying authorization based on the Role and permission via expression
+

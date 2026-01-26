@@ -35,7 +35,7 @@ public class JWTService {
     }
 
     public String generateRefreshToken(User user){
-//        Jwts.builder is for signinvg a new JWT token
+//        Jwts.builder is for signinvg a new JWT token (same as sign method of jwt in nodejs)
         return Jwts.builder()
                 .subject(user.getId().toString())
                 .issuedAt(new Date())
@@ -45,7 +45,7 @@ public class JWTService {
     }
 
     public Long getUserIdFromToken(String token){
-//        Jwts.parser is for decoding the token
+//        Jwts.parser is for decoding the token (Like decode method of jwt in nodejs)
          Claims claims = Jwts.parser()
                  .verifyWith(getSecretKey())
                  .build()

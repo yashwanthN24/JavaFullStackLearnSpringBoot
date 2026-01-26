@@ -14,6 +14,9 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,4 +70,24 @@ public class AuthController {
 //    So now the mechanism is like the user need to login until the refresh token expire which stays alive for atleast one month to 6months
 //    access token expires fast but stil the user has a refresh token when are sent with every request in cookies we us that to generate a new access token
 //
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request , HttpServletResponse response){
+
+        String refreshToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(()->new AuthenticationServiceException("Refresh token not found inside the cookies."));
+
+        authService.logout(refreshToken);
+
+        Cookie cookie = new Cookie("refreshToken" , null);
+        cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure("production".equals(deployEnv));
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok("user logged out successfully");
+    }
 }

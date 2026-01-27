@@ -43,8 +43,8 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO , HttpServletResponse response , HttpServletRequest request){
-        LoginResponseDTO loginResponseDTO = authService.login(loginDTO , request , response);
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO , HttpServletResponse response ){
+        LoginResponseDTO loginResponseDTO = authService.login(loginDTO );
 
         Cookie cookie = new Cookie("refreshToken" , loginResponseDTO.getRefreshToken());
         cookie.setHttpOnly(true);

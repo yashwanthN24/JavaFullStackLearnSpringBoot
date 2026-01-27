@@ -22,7 +22,7 @@ public class AuthService {
     private final SessionService sessionService;
 
 
-    public LoginResponseDTO login(LoginDTO loginDTO , HttpServletRequest request , HttpServletResponse response) {
+    public LoginResponseDTO login(LoginDTO loginDTO ) {
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword())
